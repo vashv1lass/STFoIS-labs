@@ -53,8 +53,14 @@ std::vector<int> generateUniversum()
 // Универсальное множество
 const std::vector<int> UNIVERSUM = generateUniversum();
 
+/**
+ * @brief Печатает массив на консоль
+ * 
+ * @tparam T тип элементов в массиве
+ * @param s массив
+ */
 template<typename T>
-void printSet(const std::vector<T>& s)
+void printArray(const std::vector<T>& s)
 {
     std::cout << "{ ";
     for (size_t i = 0; i < s.size(); i++)
@@ -218,31 +224,31 @@ int main()
         {
         case 1: // Объединение
             std::cout << "Объединение множеств X и Y: ";
-            printSet(unite(x, y));
+            printArray(unite(x, y));
             std::cout << "\n";
             break;
         case 2: // Пересечение
             std::cout << "Пересечение множеств X и Y: ";
-            printSet(intersect(x, y));
+            printArray(intersect(x, y));
             std::cout << "\n";
             break;
         case 3: // Разность X\Y и Y\X
             std::cout << "Разность множеств X и Y: ";
-            printSet(difference(x, y));
+            printArray(difference(x, y));
             std::cout << "Разность множеств Y и X: ";
-            printSet(difference(y, x));
+            printArray(difference(y, x));
             std::cout << "\n";
             break;
         case 4: // Симметрическая разность X и Y
             std::cout << "Симметрическая разность множеств X и Y: ";
-            printSet(symmetricalDifference(x, y));
+            printArray(symmetricalDifference(x, y));
             std::cout << "\n";
             break;
         case 5: // Дополнение до универсума множества X и множества Y
             std::cout << "Дополнение до универсума множества X: ";
-            printSet(additionToTheUniversum(x));
+            printArray(additionToTheUniversum(x));
             std::cout << "Дополнение до универсума множества Y: ";
-            printSet(additionToTheUniversum(y));
+            printArray(additionToTheUniversum(y));
             std::cout << "\n";
             break;
         default:
