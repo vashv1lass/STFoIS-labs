@@ -54,6 +54,44 @@ std::vector<int> generateUniversum()
 const std::vector<int> UNIVERSUM = generateUniversum();
 
 /**
+ * @brief Ввод множества
+ * 
+ * @param name имя вводимого множества
+ * @return std::vector<int> введенное множество
+ */
+std::vector<int> inputSet(const std::string& name)
+{
+    // Ввод множества <name>
+    std::cout << "Введите мощность множества " << name << " (не звбывайте, "
+                 "элементы введенного множества при их повторении будет прои"
+                 "гнорированы и мощность множества будет уменьшена): ";
+    size_t size;
+    std::cin >> size;
+
+    std::vector<int> x(size); // создаем множество
+
+    bool badSet = false;
+    do { // Вводим до тех пор, пока не будет введено множество, соответствующее требованиям
+        badSet = false;
+
+        std::cout << ("Введите множество X (ограничение по вводимым числам - "
+                      "целые числа от 1 до 100): ");
+        for (size_t i = 0; i < size; i++)
+        {
+            std::cin >> x[i];
+            if (x[i] < 1 || x[i] > 100) // проверка введенного элемента
+            {
+                badSet = true;
+                std::cout << i + 1 << ("-ый (-ий/-ой) элемент множества"
+                                       " не соответствует нужному диапазону значений!\n");
+            }
+        }
+    } while (badSet);
+
+    return x;
+}
+
+/**
  * @brief Печатает массив на консоль
  * 
  * @tparam T тип элементов в массиве
@@ -185,28 +223,10 @@ int main()
     std::setlocale(LC_ALL, "rus");
 
     // Ввод множества X
-    std::cout << "Введите мощность множества X: ";
-    size_t sizeX;
-    std::cin >> sizeX;
-    
-    std::cout << "Введите множество X: ";
-    std::vector<int> x(sizeX);
-    for (size_t i = 0; i < sizeX; i++)
-    {
-        std::cin >> x[i];
-    }
+    std::vector<int> x = inputSet("X");
 
     // Ввод множества Y
-    std::cout << "Введите мощность множества Y: ";
-    size_t sizeY;
-    std::cin >> sizeY;
-    
-    std::cout << "Введите множество Y: ";
-    std::vector<int> y(sizeY);
-    for (size_t i = 0; i < sizeY; i++)
-    {
-        std::cin >> y[i];
-    }
+    std::vector<int> y = inputSet("Y");
     
     bool terminated = false;
     while (true)
