@@ -138,22 +138,26 @@ private:
 	std::vector<int> arrivalArea;
 	std::vector< std::pair<int, int> > graph;
 public:
-	Accordance(
+	explicit Accordance(
 			const std::vector<int> &departureArea = std::vector<int>(),
 			const std::vector<int> &arrivalArea = std::vector<int>(),
 			const std::vector< std::pair<int, int> > &graph = std::vector< std::pair<int, int> >()
 	)
-	: departureArea(departureArea), arrivalArea(arrivalArea), graph(graph) {}
+			: departureArea(departureArea), arrivalArea(arrivalArea), graph(graph) {
+		std::sort(this->departureArea.begin(), this->departureArea.end());
+		std::sort(this->arrivalArea.begin(), this->arrivalArea.end());
+		std::sort(this->graph.begin(), this->graph.end());
+	}
 	
 	explicit Accordance(const std::vector< std::vector<bool> > &matrix) {
 		for (size_t i = 0; i < matrix.size(); i++) {
 			for (size_t j = 0; j < matrix[i].size(); j++) {
 				if (matrix[i][j]) {
 					if (!found(this->departureArea, (int)(1 + i))) {
-						this->departureArea.push_back(1 + i);
+						this->departureArea.push_back((int)(1 + i));
 					}
 					if (!found(this->arrivalArea, (int)(1 + j))) {
-						this->arrivalArea.push_back(1 + j);
+						this->arrivalArea.push_back((int)(1 + j));
 					}
 					if (!found(this->graph, {1 + i, 1 + j})) {
 						this->graph.emplace_back(1 + i, 1 + j);
@@ -161,12 +165,16 @@ public:
 				}
 			}
 		}
+		
+		std::sort(this->departureArea.begin(), this->departureArea.end());
+		std::sort(this->arrivalArea.begin(), this->arrivalArea.end());
+		std::sort(this->graph.begin(), this->graph.end());
 	}
 	
 	explicit Accordance(const std::vector< std::vector<int> > &graph) {
 		for (size_t i = 0; i < graph.size(); i++) {
 			if (!found(this->departureArea, (int)(1 + i))) {
-				this->departureArea.push_back(1 + i);
+				this->departureArea.push_back((int)(1 + i));
 			}
 			
 			for (size_t j = 0; j < graph[i].size(); j++) {
@@ -178,6 +186,10 @@ public:
 				}
 			}
 		}
+		
+		std::sort(this->departureArea.begin(), this->departureArea.end());
+		std::sort(this->arrivalArea.begin(), this->arrivalArea.end());
+		std::sort(this->graph.begin(), this->graph.end());
 	}
 	
 	/**
@@ -185,7 +197,7 @@ public:
 	 *
 	 * @return std::vector<int> область отправления соответствия
 	 */
-	std::vector<int> getDepartureArea() const {
+	[[nodiscard]] std::vector<int> getDepartureArea() const {
 		return this->departureArea;
 	}
 	
@@ -194,7 +206,7 @@ public:
 	 *
 	 * @return std::vector<int> область прибытия соответствия
 	 */
-	std::vector<int> getArrivalArea() const {
+	[[nodiscard]] std::vector<int> getArrivalArea() const {
 		return this->arrivalArea;
 	}
 	
@@ -203,7 +215,7 @@ public:
 	 *
 	 * @return std::vector< std::pair<int, int> > соответствия
 	 */
-	std::vector< std::pair<int, int> > getGraph() const {
+	[[nodiscard]] std::vector< std::pair<int, int> > getGraph() const {
 		return this->graph;
 	}
 	
@@ -212,14 +224,15 @@ public:
 	 *
 	 * @return std::vector<int> область определения соответствия
 	 */
-	std::vector<int> definitionArea() const {
+	[[nodiscard]] std::vector<int> definitionArea() const {
 		std::vector<int> result;
 		
-		for (size_t i = 0; i < this->graph.size(); i++) {
-			if (!found(result, this->graph[i].first)) {
-				result.push_back(this->graph[i].first);
+		for (const std::pair<int, int> &current : this->graph) {
+			if (!found(result, current.first)) {
+				result.push_back(current.first);
 			}
 		}
+		std::sort(result.begin(), result.end());
 		
 		return result;
 	}
@@ -229,14 +242,15 @@ public:
 	 *
 	 * @return std::vector<int> область значений соответствия
 	 */
-	std::vector<int> valueArea() const {
+	[[nodiscard]] std::vector<int> valueArea() const {
 		std::vector<int> result;
 		
-		for (size_t i = 0; i < this->graph.size(); i++) {
-			if (!found(result, this->graph[i].second)) {
-				result.push_back(this->graph[i].second);
+		for (const std::pair<int, int> &current : this->graph) {
+			if (!found(result, current.second)) {
+				result.push_back(current.second);
 			}
 		}
+		std::sort(result.begin(), result.end());
 		
 		return result;
 	}
@@ -247,7 +261,7 @@ public:
 	 * @return true если соответствие является всюду определённым
 	 * @return false если нет
 	 */
-	bool isEverywhereDefined() const {
+	[[nodiscard]] bool isEverywhereDefined() const {
 		return this->definitionArea() == this->departureArea;
 	}
 	
@@ -257,7 +271,7 @@ public:
 	 * @return true если соответствие является сюръективным
 	 * @return false если нет
 	 */
-	bool isSurjective() const {
+	[[nodiscard]] bool isSurjective() const {
 		return this->valueArea() == this->arrivalArea;
 	}
 	
@@ -267,19 +281,17 @@ public:
 	 * @return true если соответствие является функциональным
 	 * @return false если нет
 	 */
-	bool isFunctional() const {
+	[[nodiscard]] bool isFunctional() const {
 		std::map<int, int> firstCount;
 		
-		for (size_t i = 0; i < this->graph.size(); i++) {
-			++firstCount[this->graph[i].first];
+		for (const std::pair<int, int> &current : this->graph) {
+			++firstCount[current.first];
 		}
 		
-		for (auto current : firstCount) {
-			if (current.second > 1) {
-				return false;
-			}
-		}
-		return true;
+		return std::all_of(firstCount.begin(), firstCount.end(),
+						   [](const std::pair<int, int> &element) {
+			return element.second <= 1;
+		});
 	}
 	
 	/**
@@ -288,19 +300,17 @@ public:
 	 * @return true если соответствие является инъективным
 	 * @return false если нет
 	 */
-	bool isInjective() const {
+	[[nodiscard]] bool isInjective() const {
 		std::map<int, int> secondCount;
 		
-		for (size_t i = 0; i < this->graph.size(); i++) {
-			++secondCount[this->graph[i].second];
+		for (const std::pair<int, int> &current : this->graph) {
+			++secondCount[current.second];
 		}
 		
-		for (auto current : secondCount) {
-			if (current.second > 1) {
-				return false;
-			}
-		}
-		return true;
+		return std::all_of(secondCount.begin(), secondCount.end(),
+					[](const std::pair<int, int> &element) {
+			return element.second <= 1;
+		});
 	}
 	
 	/**
@@ -309,7 +319,7 @@ public:
 	 * @return true если соответствие является отображением X в Y
 	 * @return false если нет
 	 */
-	bool isMappingIn() const {
+	[[nodiscard]] bool isMappingIn() const {
 		return this->isEverywhereDefined() && this->isFunctional();
 	}
 	
@@ -319,7 +329,7 @@ public:
 	 * @return true если соответствие является отображением X на Y
 	 * @return false если нет
 	 */
-	bool isMappingTo() const {
+	[[nodiscard]] bool isMappingTo() const {
 		return this->isEverywhereDefined() && this->isFunctional() && this->isSurjective();
 	}
 	
@@ -329,7 +339,7 @@ public:
 	 * @return true если соответствие является взаимно однозначным
 	 * @return false если нет
 	 */
-	bool isOneToOne() const {
+	[[nodiscard]] bool isOneToOne() const {
 		return this->isFunctional() && this->isInjective();
 	}
 	
@@ -339,7 +349,7 @@ public:
 	 * @return true если соответствие является биекцией
 	 * @return false если нет
 	 */
-	bool isBijection() const {
+	[[nodiscard]] bool isBijection() const {
 		return (this->isEverywhereDefined() && this->isSurjective() &&
 		        this->isFunctional() && this->isInjective());
 	}
@@ -353,9 +363,11 @@ public:
 	std::vector<int> findImage(const std::vector<int> &a) {
 		std::vector<int> gammaB;
 		
-		for (size_t i = 0; i < this->graph.size(); i++) {
-			if (found(a, this->graph[i].first)) {
-				gammaB.push_back(this->graph[i].second);
+		for (const std::pair<int, int> &current : this->graph) {
+			if (found(a, current.first)) {
+				if (!found(gammaB, current.second)) {
+					gammaB.push_back(current.second);
+				}
 			}
 		}
 		
@@ -371,9 +383,11 @@ public:
 	std::vector<int> findPrototype(const std::vector<int> &b) {
 		std::vector<int> gammaMinus1B;
 		
-		for (size_t i = 0; i < this->graph.size(); i++) {
-			if (found(b, this->graph[i].second)) {
-				gammaMinus1B.push_back(this->graph[i].first);
+		for (const std::pair<int, int> &current : this->graph) {
+			if (found(b, current.second)) {
+				if (!found(gammaMinus1B, current.first)) {
+					gammaMinus1B.push_back(current.first);
+				}
 			}
 		}
 		
@@ -425,11 +439,26 @@ Accordance intersect(const Accordance &x, const Accordance &y) {
  * @return Accordance соотв-ие, являющееся разностью соответствий X и Y
  */
 Accordance difference(const Accordance &x, const Accordance &y) {
-	return Accordance(
+	Accordance a = Accordance(
 			difference(x.getDepartureArea(), y.getDepartureArea()),
 			difference(x.getArrivalArea(), y.getArrivalArea()),
 			difference(x.getGraph(), y.getGraph())
 	);
+	
+	for (size_t i = 0; i < a.graph.size(); i++) {
+		if (!found(a.departureArea, a.graph[i].first)) {
+			a.graph.erase(a.graph.begin() + (ptrdiff_t)i);
+			--i;
+		}
+	}
+	for (size_t i = 0; i < a.graph.size(); i++) {
+		if (!found(a.arrivalArea, a.graph[i].second)) {
+			a.graph.erase(a.graph.begin() + (ptrdiff_t)i);
+			--i;
+		}
+	}
+	
+	return a;
 }
 
 /**
@@ -467,11 +496,108 @@ Accordance composition(const Accordance &x, const Accordance &y) {
  * @param s множество
  * @param name имя множества
  */
-void inputSet(std::vector<int>& s, const std::string& whatArea)
+void inputSet(std::vector<int>& s, const std::string& name)
 {
 	int option = -1;
 	while (!(1 <= option && option <= 2)) {
-		std::cout << "Выберите способ задания множества, являюегося областью " << whatArea <<
+		std::cout << "Выберите способ задания множества, " << name << ":\n"
+		             "1. Традиционный.\n"
+		             "2. Высказывательный.\n";
+		std::cin >> option;
+		
+		switch (option) {
+			case 1: {
+				std::cout << "Введите размер множества " << name <<
+				          " (помните, что после ввода повторяющиеся элементы множества удаляются,"
+				          "что может привести к несоответствию желаемых и действительных размеров "
+				          "множества): ";
+				size_t size;
+				std::cin >> size;
+				s.reserve(size);
+				
+				std::cout << "Введите множество:\n";
+				for (int i = 0; i < size; i++) {
+					int x;
+					std::cin >> x;
+					if (!found(s, x)) {
+						s.push_back(x);
+					}
+				}
+			}
+				break;
+			case 2: {
+				int option1 = -1;
+				while (!(1 <= option1 && option1 <= 4)) {
+					std::cout << "Выберите одно из трёх возможных высказываний, по которому вы хотите "
+					             "заполнить множество:\n"
+					             "1. Квадраты натуральных чисел в промежутке [a;b].\n"
+					             "2. Чётные числа в промежутке [a;b].\n"
+					             "3. Нечётные числа в промежутке [a;b].\n"
+					             "4. Натуральные числа в промежутке [a;b].\n";
+					std::cin >> option1;
+					int a, b;
+					switch (option1) {
+						case 1:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
+							for (int i = a; i <= b; i++) {
+								s.push_back(i * i);
+							}
+							break;
+						case 2:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
+							a += (a % 2);
+							for (int i = a; i <= b; i += 2) {
+								s.push_back(i);
+							}
+							break;
+						case 3:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
+							a += ((a + 1) % 2);
+							for (int i = a; i <= b; i += 2) {
+								s.push_back(i);
+							}
+							break;
+						case 4:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
+							for (int i = a; i <= b; i++) {
+								s.push_back(i);
+							}
+							break;
+						default:
+							std::cout << "Выберите один из предложенных вариантов!\n";
+					}
+				}
+			}
+				break;
+			default:
+				std::cout << "Выберите один из предложенных вариантов!\n";
+		}
+	}
+}
+
+/**
+ * @brief Ввод элементов множества целых чисел (для соответствия)
+ *
+ * @param s множество
+ * @param name имя множества
+ */
+void inputSetForAccordance(std::vector<int>& s, const std::string& whatArea)
+{
+	int option = -1;
+	while (!(1 <= option && option <= 2)) {
+		std::cout << "Выберите способ задания множества, являющегося областью " << whatArea <<
 		          " данного соответствия.\n"
 		          "1. Традиционный.\n"
 		          "2. Высказывательный.\n";
@@ -499,33 +625,51 @@ void inputSet(std::vector<int>& s, const std::string& whatArea)
 				break;
 			case 2: {
 				int option1 = -1;
-				while (!(1 <= option1 && option1 <= 3)) {
+				while (!(1 <= option1 && option1 <= 4)) {
 					std::cout << "Выберите одно из трёх возможных высказываний, по которому вы хотите "
 					             "заполнить множество:\n"
 					             "1. Квадраты натуральных чисел в промежутке [a;b].\n"
 					             "2. Чётные числа в промежутке [a;b].\n"
-					             "3. Нечётные числа в промежутке [a;b].\n";
+					             "3. Нечётные числа в промежутке [a;b].\n"
+								 "4. Натуральные числа в промежутке [a;b].\n";
 					std::cin >> option1;
 					int a, b;
-					std::cout << "Введите a: ";
-					std::cin >> a;
-					std::cout << "Введите b: ";
-					std::cin >> b;
 					switch (option1) {
 						case 1:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
 							for (int i = a; i <= b; i++) {
 								s.push_back(i * i);
 							}
 							break;
 						case 2:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
 							a += (a % 2);
 							for (int i = a; i <= b; i += 2) {
 								s.push_back(i);
 							}
 							break;
 						case 3:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
 							a += ((a + 1) % 2);
 							for (int i = a; i <= b; i += 2) {
+								s.push_back(i);
+							}
+							break;
+						case 4:
+							std::cout << "Введите a: ";
+							std::cin >> a;
+							std::cout << "Введите b: ";
+							std::cin >> b;
+							for (int i = a; i <= b; i++) {
 								s.push_back(i);
 							}
 							break;
@@ -576,22 +720,22 @@ void inputGraph(std::vector< std::pair<int, int> >& g)
  * @param a соответствие
  * @param name имя соответствия
  */
-void inputAccordance(Accordance &a, const std::string name) {
+void inputAccordance(Accordance &a, const std::string &name) {
 	int option = -1;
 	while (!(1 <= option && option <= 3)) {
 		std::cout << "Выберите способ задания соответствия " << name << ":\n"
-					 "1. Теоретический.\n"
-		             "2. Матричный.\n"
-		             "3. Графический.\n";
+		                                                                "1. Теоретический.\n"
+		                                                                "2. Матричный.\n"
+		                                                                "3. Графический.\n";
 		std::cin >> option;
 		
 		switch (option) {
 			case 1:
 			{
 				std::vector<int> x;
-				inputSet(x, "отправления");
+				inputSetForAccordance(x, "отправления");
 				std::vector<int> y;
-				inputSet(y, "прибытия");
+				inputSetForAccordance(y, "прибытия");
 				std::vector< std::pair<int, int> > g;
 				inputGraph(g);
 				
@@ -628,7 +772,7 @@ void inputAccordance(Accordance &a, const std::string name) {
 				
 				for (size_t i = 0; i < n; i++) {
 					std::cout << "Введите количество элементов в области прибытия соответствия, "
-								 "с которыми есть связь у " << 1 + i << "-го элемента\n";
+					             "с которыми есть связь у " << 1 + i << "-го элемента\n";
 					size_t m;
 					std::cin >> m;
 					std::cout << "Введите номера элементов в области прибытия соответствия, "
@@ -690,12 +834,71 @@ void printGraph(const std::vector< std::pair<int, int> >& g)
  * @param name имя соответствия
  */
 void printAccordance(const Accordance &a, const std::string &name) {
-	std::cout << "Область отправления соответствия " << name << ":\n";
+	std::cout << "Характеристика соответствия " << name << ":\n";
+	
+	std::cout << "1. Область отправления соответствия:\n";
 	printSet(a.getDepartureArea());
-	std::cout << "Область прибытия соответствия " << name << ":\n";
+	
+	std::cout << "2. Область прибытия соответствия:\n";
 	printSet(a.getArrivalArea());
-	std::cout << "График соответствия " << name << ":\n";
+	
+	std::cout << "3. График соответствия:\n";
 	printGraph(a.getGraph());
+	
+	std::cout << "4. Область определения соответствия: \n";
+	printSet(a.definitionArea());
+	
+	std::cout << "5. Область значений соответствия: \n";
+	printSet(a.valueArea());
+	
+	if (a.isEverywhereDefined()) {
+		std::cout << "6. Всюду определено.\n";
+	} else {
+		std::cout << "6. Не является всюду определенным.\n";
+	}
+	
+	if (a.isSurjective()) {
+		std::cout << "7. Субъективно.\n";
+	} else {
+		std::cout << "7. Несюръективно.\n";
+	}
+	
+	if (a.isFunctional()) {
+		std::cout << "8. Функционально.\n";
+	} else {
+		std::cout << "8. Нефункционально.\n";
+	}
+	
+	if (a.isInjective()) {
+		std::cout << "9. Инъективно.\n";
+	} else
+		std::cout << "9. Неинъективно.\n";
+	
+	
+	if (a.isMappingIn()) {
+		std::cout << "10. Является отображением X в Y ";
+	} else {
+		std::cout << "10. Не является отображением X в Y ";
+	}
+	std::cout << "(где X - область отправления, Y - область прибытия).\n";
+	
+	if (a.isMappingTo()) {
+		std::cout << "11. Является отображением X на Y.\n";
+	} else {
+		std::cout << "11. Не является отображением X на Y.\n";
+	}
+	
+	if (a.isOneToOne()) {
+		std::cout << "12. Является взаимно однозначным.\n";
+	} else {
+		std::cout << "12. Не является взаимно однозначным.\n";
+	}
+	
+	if (a.isBijection()) {
+		std::cout << "13. Является биекцией.\n";
+	} else {
+		std::cout << "13. Не является биекцией.\n";
+	}
 }
 
 int main() {
@@ -782,56 +985,7 @@ int main() {
 				Accordance a;
 				inputAccordance(a, "A");
 				
-				std::cout << "Соответствие A:\n";
-				
-				if (a.isEverywhereDefined()) {
-					std::cout << "1. Всюду определено.\n";
-				} else {
-					std::cout << "1. Не является всюду определенным.\n";
-				}
-				
-				if (a.isSurjective()) {
-					std::cout << "2. Сюръективно.\n";
-				} else {
-					std::cout << "2. Несюръективно.\n";
-				}
-				
-				if (a.isFunctional()) {
-					std::cout << "3. Функционально.\n";
-				} else {
-					std::cout << "3. Нефункционально.\n";
-				}
-				
-				if (a.isInjective()) {
-					std::cout << "4. Инъективно\n";
-				} else {
-					std::cout << "4. Неинъективно.\n";
-				}
-				
-				if (a.isMappingIn()) {
-					std::cout << "5. Является отображением X в Y ";
-				} else {
-					std::cout << "5. Не является отображением X в Y ";
-				}
-				std::cout << "(где X - область отправления, Y - область прибытия).\n";
-				
-				if (a.isMappingTo()) {
-					std::cout << "6. Является отображением X на Y.\n";
-				} else {
-					std::cout << "6. Не является отображением X на Y.\n";
-				}
-				
-				if (a.isOneToOne()) {
-					std::cout << "7. Является взаимно однозначным.\n";
-				} else {
-					std::cout << "7. Не является взаимно однозначным.\n";
-				}
-				
-				if (a.isBijection()) {
-					std::cout << "8. Является биекцией.\n";
-				} else {
-					std::cout << "8. Не является биекцией.\n";
-				}
+				printAccordance(a, "A");
 			}
 				break;
 			case 7:
@@ -860,8 +1014,8 @@ int main() {
 				break;
 			default:
 				std::cout << "Выход из программы...\n";
-			std::cout << '\n';
 		}
+		std::cout << '\n';
 	}
 	
 	return EXIT_SUCCESS;
