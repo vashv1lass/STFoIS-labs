@@ -40,7 +40,6 @@ std::vector<T> unite(const std::vector<T> &x, const std::vector<T> &y) {
 	return result;
 }
 
-
 /**
  * @brief Пересечение двух множеств
  *
@@ -496,18 +495,18 @@ Accordance composition(const Accordance &x, const Accordance &y) {
  * @param s множество
  * @param name имя множества
  */
-void inputSet(std::vector<int>& s, const std::string& name)
+void inputSet(std::vector<int>& s, const std::string& message)
 {
 	int option = -1;
 	while (!(1 <= option && option <= 2)) {
-		std::cout << "Выберите способ задания множества, " << name << ":\n"
+		std::cout << "Выберите способ задания множества" << message << ":\n"
 		             "1. Традиционный.\n"
 		             "2. Высказывательный.\n";
 		std::cin >> option;
 		
 		switch (option) {
 			case 1: {
-				std::cout << "Введите размер множества " << name <<
+				std::cout << "Введите размер множества" << message <<
 				          " (помните, что после ввода повторяющиеся элементы множества удаляются,"
 				          "что может привести к несоответствию желаемых и действительных размеров "
 				          "множества): ";
@@ -534,104 +533,6 @@ void inputSet(std::vector<int>& s, const std::string& name)
 					             "2. Чётные числа в промежутке [a;b].\n"
 					             "3. Нечётные числа в промежутке [a;b].\n"
 					             "4. Натуральные числа в промежутке [a;b].\n";
-					std::cin >> option1;
-					int a, b;
-					switch (option1) {
-						case 1:
-							std::cout << "Введите a: ";
-							std::cin >> a;
-							std::cout << "Введите b: ";
-							std::cin >> b;
-							for (int i = a; i <= b; i++) {
-								s.push_back(i * i);
-							}
-							break;
-						case 2:
-							std::cout << "Введите a: ";
-							std::cin >> a;
-							std::cout << "Введите b: ";
-							std::cin >> b;
-							a += (a % 2);
-							for (int i = a; i <= b; i += 2) {
-								s.push_back(i);
-							}
-							break;
-						case 3:
-							std::cout << "Введите a: ";
-							std::cin >> a;
-							std::cout << "Введите b: ";
-							std::cin >> b;
-							a += ((a + 1) % 2);
-							for (int i = a; i <= b; i += 2) {
-								s.push_back(i);
-							}
-							break;
-						case 4:
-							std::cout << "Введите a: ";
-							std::cin >> a;
-							std::cout << "Введите b: ";
-							std::cin >> b;
-							for (int i = a; i <= b; i++) {
-								s.push_back(i);
-							}
-							break;
-						default:
-							std::cout << "Выберите один из предложенных вариантов!\n";
-					}
-				}
-			}
-				break;
-			default:
-				std::cout << "Выберите один из предложенных вариантов!\n";
-		}
-	}
-}
-
-/**
- * @brief Ввод элементов множества целых чисел (для соответствия)
- *
- * @param s множество
- * @param name имя множества
- */
-void inputSetForAccordance(std::vector<int>& s, const std::string& whatArea)
-{
-	int option = -1;
-	while (!(1 <= option && option <= 2)) {
-		std::cout << "Выберите способ задания множества, являющегося областью " << whatArea <<
-		          " данного соответствия.\n"
-		          "1. Традиционный.\n"
-		          "2. Высказывательный.\n";
-		std::cin >> option;
-		
-		switch (option) {
-			case 1: {
-				std::cout << "Введите размер множества, являющегося областью " << whatArea <<
-				          " (помните, что после ввода повторяющиеся элементы множества удаляются,"
-				          "что может привести к несоответствию желаемых и действительных размеров "
-				          "множества): ";
-				size_t size;
-				std::cin >> size;
-				s.reserve(size);
-				
-				std::cout << "Введите множество:\n";
-				for (int i = 0; i < size; i++) {
-					int x;
-					std::cin >> x;
-					if (!found(s, x)) {
-						s.push_back(x);
-					}
-				}
-			}
-				break;
-			case 2: {
-				int option1 = -1;
-				while (!(1 <= option1 && option1 <= 4)) {
-					std::cout << "Выберите одно из трёх возможных высказываний, по которому вы хотите "
-					             "заполнить множество:\n"
-					             "1. Квадраты натуральных чисел в промежутке [a;b].\n"
-					             "2. Чётные числа в промежутке [a;b].\n"
-					             "3. Нечётные числа в промежутке [a;b].\n"
-								 "4. Натуральные числа в промежутке [a;b].\n";
 					std::cin >> option1;
 					int a, b;
 					switch (option1) {
@@ -733,9 +634,9 @@ void inputAccordance(Accordance &a, const std::string &name) {
 			case 1:
 			{
 				std::vector<int> x;
-				inputSetForAccordance(x, "отправления");
+				inputSet(x, ", являющегося областью отправления соответствия " + name);
 				std::vector<int> y;
-				inputSetForAccordance(y, "прибытия");
+				inputSet(y, ", являющегося областью прибытия соответствия " + name);
 				std::vector< std::pair<int, int> > g;
 				inputGraph(g);
 				
@@ -815,7 +716,7 @@ void printSet(const std::vector<T>& s) {
  */
 void printGraph(const std::vector< std::pair<int, int> >& g)
 {
-	std::cout << "{";
+	std::cout << "{ ";
 	for (int i = 0; i < g.size(); i++)
 	{
 		std::cout << "<" << g[i].first << ", " << g[i].second << ">";
@@ -824,7 +725,7 @@ void printGraph(const std::vector< std::pair<int, int> >& g)
 			std::cout << ", ";
 		}
 	}
-	std::cout << "}\n";
+	std::cout << " }\n";
 }
 
 /**
@@ -858,7 +759,7 @@ void printAccordance(const Accordance &a, const std::string &name) {
 	}
 	
 	if (a.isSurjective()) {
-		std::cout << "7. Субъективно.\n";
+		std::cout << "7. Сюръективно.\n";
 	} else {
 		std::cout << "7. Несюръективно.\n";
 	}
@@ -994,7 +895,7 @@ int main() {
 				inputAccordance(gamma, "Г");
 				
 				std::vector<int> a;
-				inputSet(a, "A");
+				inputSet(a, " A");
 				
 				std::cout << "Образом множества A при соответствии Г является множество:\n";
 				printSet(gamma.findImage(a));
@@ -1006,7 +907,7 @@ int main() {
 				inputAccordance(gamma, "Г");
 				
 				std::vector<int> b;
-				inputSet(b, "B");
+				inputSet(b, " B");
 				
 				std::cout << "Прообразом множества B при соответствии Г является множество:\n";
 				printSet(gamma.findPrototype(b));
